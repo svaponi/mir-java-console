@@ -1,0 +1,6 @@
+
+# Eclipse material
+.project
+.classpath
+.settings/
+target/
