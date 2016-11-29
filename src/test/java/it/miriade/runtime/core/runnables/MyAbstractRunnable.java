@@ -1,11 +1,9 @@
-package it.miride.console.runnables;
+package it.miriade.runtime.core.runnables;
 
 import java.util.Arrays;
 import java.util.List;
 
-import it.miriade.console.ConsoleRunnable;
-
-public abstract class MyAbstractRunnable implements ConsoleRunnable {
+public abstract class MyAbstractRunnable implements Runnable {
 
 	protected static final String first;
 	protected static final String second;

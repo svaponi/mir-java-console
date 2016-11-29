@@ -1,4 +1,4 @@
-package it.miriade.console.runtime;
+package it.miriade.runtime.core.ex;
 
 public class RuntimeCompilationException extends RuntimeException {
 

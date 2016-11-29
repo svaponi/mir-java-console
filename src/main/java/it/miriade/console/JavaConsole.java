@@ -1,135 +1,152 @@
 package it.miriade.console;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
-import java.util.concurrent.CyclicBarrier;
+import java.util.regex.Pattern;
 
-import it.miriade.console.runtime.RuntimeCompilationException;
-import it.miriade.console.runtime.RuntimeObjectCompiler;
+import it.miriade.runtime.core.RuntimeClassCompiler;
+import it.miriade.runtime.core.RuntimeClassDefinition;
 
 /**
+ * Console Java: permette di eseguire del codice a runtime. Il codice in input
+ * viene inserito nel corpo del metodo {@link Runnable#run()} di una classe che
+ * implementa l'interfaccia {@link Runnable}. Dopo essere stata compilata ed
+ * inizializzato un oggetto da questa classe, viene eseguito tale metodo.
  * 
  * @author svaponi
- *
  */
-public class JavaConsole<T extends ConsoleRunnable> {
+public class JavaConsole {
 
-	static final String RUNTIME_PACKAGE = "it.miriade.console.runtime";
-	static final String RUNTIME_CLASSNAME = "OnFlyProgram";
-	static final String QUALIFIED_CLASSNAME = RUNTIME_PACKAGE + "." + RUNTIME_CLASSNAME;
-	static final boolean ident = true;
+	public static final Pattern returnStatement = Pattern.compile("^return(\\ \\w*)?[;]?$");
+	public static final Pattern returnEmptyStatement = Pattern.compile("^return(\\ )*[;]?$");
+	public static final Pattern missingEndColon = Pattern.compile("^(?!for|if|while|else).*[^;]$");
+	public static final Pattern sysoShortcut = Pattern.compile("^syso\\ (.*)[;]?$");
 
-	private StringBuffer sourceCode;
-	public Class<T> clazz;
+	// private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-	public JavaConsole(Class<T> clazz) {
+	protected InputStream is = System.in;
+	protected Scanner in;
+	protected RuntimeClassDefinition def;
+
+	public JavaConsole() {
+		this(Runnable.class);
+	}
+
+	public JavaConsole(Class<?> clazz) {
 		super();
-		this.clazz = clazz;
-		sourceCode = new StringBuffer();
+		def = new RuntimeClassDefinition(clazz);
 	}
 
-	public Object execute(String code) {
-		return execute(code, Collections.emptyList());
+	public void changeInput(InputStream is) {
+		this.is = is;
 	}
 
-	public Object execute(String code, List<Class<?>> imports) {
+	/**
+	 * Esegue una porzione di codice
+	 * 
+	 * @param code
+	 */
+	public void run(String code) {
+		run(code, Collections.emptyList());
+	}
+
+	/**
+	 * Esegue una porzione di codice utilizzando con la possibilità di usare le
+	 * classi importate.
+	 * 
+	 * @param code
+	 * @param imports
+	 */
+	public void run(String code, List<?> imports) {
+		def.startDefinition(imports);
+		def.appendCode(code);
+		def.closeDefinition();
+		((Runnable) RuntimeClassCompiler.build(def)).run();
+	}
+
+	public void run(List<String> linesOfCode, List<?> imports) {
+		def.startDefinition(imports);
+		def.appendCode(linesOfCode);
+		def.closeDefinition();
+		((Runnable) RuntimeClassCompiler.build(def)).run();
+	}
+
+	public void start() {
+		start(Collections.emptyList());
+	}
+
+	public void start(List<?> imports) {
 		try {
-			init(imports);
-			append(code);
-			close();
-			T cycle = RuntimeObjectCompiler.build(QUALIFIED_CLASSNAME, sourceCode.toString());
-			return cycle.run();
-		} catch (SecurityException | IllegalArgumentException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+			in = new Scanner(is);
+			List<String> lines = new ArrayList<>();
+			String line = validateLine(readLine());
+			boolean eof = false; // end of file
 
-	public void interactive() {
-		interactive(Collections.emptyList());
-	}
+			loop: while (!line.equalsIgnoreCase("exit")) {
+				if (eof || returnStatement.matcher(line).find()) {
+					// se leggo un return da stdin chiudo il metodo e procedo
+					// con la compilazione
 
-	public void interactive(List<Class<?>> imports) {
-		String qualifiedClassName = QUALIFIED_CLASSNAME;
-		System.out.println();
-		try (Scanner in = new Scanner(System.in)) {
-			System.out.print("CONSOLE > ");
-			String line = in.nextLine();
-			init(imports);
-			while (!line.equalsIgnoreCase("exit")) {
-				if (line.equalsIgnoreCase("!!")) { // se leggo !! da stdin
-													// chiudo il metodo e
-													// compilo
-
-					close();
-					System.out.println();
-					System.out.println(sourceCode.toString());
+					if (!eof)
+						lines.add("return;");
 
 					try {
-						Class<T> cycleClass = RuntimeObjectCompiler.build(qualifiedClassName, sourceCode.toString());
-						Constructor<T> ctor = cycleClass.getConstructor();
-						T cycle = (T) ctor.newInstance();
-						Object result = cycle.run();
-						System.out.println(result);
-
+						run(lines, imports);
+						lines.clear(); // svuoto il buffer
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
 
-					init(imports); // comincio un nuovo ciclo
+					if (eof)
+						break loop;
 
-				} else {
-					append(line);
+				} else if (line != null && !line.isEmpty()) {
+					lines.add(validateLine(line));
 				}
 
-				line = in.nextLine();
+				try {
+					line = readLine();
+				} catch (NoSuchElementException e) {
+					eof = true;
+				}
 			}
+		} finally {
+			in.close();
 		}
 	}
 
-	private void init(List<Class<?>> imports) {
-		try {
-			sourceCode.delete(0, sourceCode.length());
-			sourceCode.append("package ").append(RUNTIME_PACKAGE).append(";").append(nl());
-			for (Class<?> clazz : imports)
-				sourceCode.append("import ").append(clazz.getCanonicalName()).append(";").append(nl());
-			String extendsOrImplements = clazz.isInterface() ? " implements " : " extends ";
-			sourceCode.append("public class ").append(RUNTIME_CLASSNAME).append(extendsOrImplements)
-					.append(clazz.getCanonicalName()).append(" {").append("\n");
-			sourceCode.append(tab()).append("public Object run() {").append("\n");
-
-			// System.out.println(sourceCode.toString());
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new RuntimeCompilationException(e.getMessage());
-		}
+	/**
+	 * Legge una linea di codice dall'input. Di default input è lo STDIN, ovvero
+	 * la console, ma può essere anche un file o qualsiasi sorgente implementi
+	 * {@link InputStream}.
+	 * 
+	 * @return
+	 */
+	protected String readLine() {
+		if (System.in.equals(is))
+			System.out.print("CONSOLE > ");
+		return in.nextLine().trim();
 	}
 
-	private String nl() {
-		return ident ? "\n" : "";
-	}
-
-	public String tab() {
-		return ident ? "\t" : "";
-	}
-
-	void append(String[] lines) {
-		for (String line : lines)
-			append(line);
-	}
-
-	void append(String line) {
-		sourceCode.append(tab()).append(tab()).append(line).append(nl());
-	}
-
-	void close() {
-		sourceCode.append(tab()).append("}").append(nl());
-		sourceCode.append("}").append(nl());
+	/**
+	 * Valida la linea di codice aggiungendo alcune banali sistemazioni (es.
+	 * punto e virgola alla fine)
+	 * 
+	 * @param line
+	 * @return
+	 */
+	protected String validateLine(String line) {
+		if (line == null || line.isEmpty())
+			return "";
+		if (sysoShortcut.matcher(line).find())
+			line = line.replaceFirst("syso\\ (.*)[;]?$", "System.out.println($1);");
+		if (missingEndColon.matcher(line).find())
+			line += ";";
+		return line;
 	}
 
 }

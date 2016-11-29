@@ -1,0 +1,19 @@
+String pathname = "target/runtime.txt";
+try (PrintWriter writer = new PrintWriter(pathname, "UTF-8")) {
+	// usa la variabile constant
+	for(String nth : constant)
+		writer.println("The ").append(nth).append(" line");
+	for (int i = 4; i < Math.pow(10, 6); i++) {
+		if (i % 10 == 1)
+			writer.println("The " + i + "st line");
+		else if (i % 10 == 2)
+			writer.println("The " + i + "nd line");
+		else if (i % 10 == 3)
+			writer.println("The " + i + "rd line");
+		else
+			writer.println("The " + i + "th line");
+	}
+} catch (Exception e) {
+	e.printStackTrace();
+}
+

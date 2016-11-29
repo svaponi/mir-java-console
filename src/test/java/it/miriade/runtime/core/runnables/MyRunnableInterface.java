@@ -1,11 +1,9 @@
-package it.miride.console.runnables;
+package it.miriade.runtime.core.runnables;
 
 import java.util.Arrays;
 import java.util.List;
 
-import it.miriade.console.ConsoleRunnable;
-
-public interface MyRunnableInterface extends ConsoleRunnable {
+public interface MyRunnableInterface extends Runnable {
 
 	String first = "first";
 	String second = "second";

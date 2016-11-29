@@ -1,0 +1,8 @@
+String pathname = "target/runtime.txt";
+try (PrintWriter writer = new PrintWriter(pathname, "UTF-8")) {
+	// usa la variabile constant
+	for(String nth : constant)
+		writer.println("The ").append(nth).append(" line");
+} catch (Exception e) {
+	e.printStackTrace();
+}
