@@ -26,6 +26,7 @@ public class JavaConsole {
 	public static final Pattern missingEndColon = Pattern.compile("^(?!for|if|while|else).*[^;]$");
 	public static final Pattern sysoShortcut = Pattern.compile("^syso\\ ([^;!]*)[;]?[!]?$");
 	public static final Pattern specialCommand = Pattern.compile("^:([\\w]*)$");
+	public static final Pattern setCommand = Pattern.compile("^:([\\w]*)([\\ ]([\\w]*)[=]([\\w]*))?$");
 	public static final Pattern runSingleLine = Pattern.compile("^(.*)!$");
 
 	// private final Logger log = LoggerFactory.getLogger(this.getClass());

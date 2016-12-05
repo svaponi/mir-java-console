@@ -4,9 +4,9 @@ import java.util.Collections;
 import java.util.List;
 
 import it.miriade.console.JavaConsole;
+import it.miriade.runtime.core.RuntimeClassCompiler;
 import it.miriade.runtime.core.RuntimeClassDefinition;
 import it.miriade.runtime.core.runnables.RunnableWithResult;
-import it.miriade.runtime.core.RuntimeClassCompiler;
 
 /**
  * Questa classe esegue una porzione di codice compilata runtime e ritorna
@@ -16,7 +16,6 @@ import it.miriade.runtime.core.RuntimeClassCompiler;
  * codice.
  * 
  * @author svaponi
- *
  */
 public class JavaResultBuilder extends JavaConsole {
 

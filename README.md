@@ -1,6 +1,28 @@
 # mir-java-console
 A Java interactive console, simulates the typical console of interpreted languages like Python, Ruby, etc..
 
+## Maven dependecy
+Use [jitpack.io](https://jitpack.io/) as package repository for Git.
+
+```xml
+<repositories>
+	<repository>
+		<id>jitpack.io</id>
+		<url>https://jitpack.io</url>
+	</repository>
+	...
+</repositories>
+
+<dependencies>
+	<dependency>
+		<groupId>com.github.svaponi</groupId>
+		<artifactId>mir-java-console</artifactId>
+		<version>master-SNAPSHOT</version>
+	</dependency>
+	...
+</dependencies>
+```
+
 ## How to
 Example on how to start the console.
 
@@ -12,10 +34,10 @@ cd mir-java-console
 mvn clean compile assembly:single
 
 user@machine:/path/to/mir-java-console$ java -jar target/mir-java-console-1.1.0-jar-with-dependencies.jar
-13:35:14.006 INFO  it.miriade.console.Main - Version        1.1.0 
+13:35:14.006 INFO  it.miriade.console.Main - Version        1.1.0
 CONSOLE > for(int i=0; i<10; i++)
 CONSOLE > syso Math.random() * i
-CONSOLE > return 
+CONSOLE > return
 0.0
 0.587068054918665
 0.7806313085633403

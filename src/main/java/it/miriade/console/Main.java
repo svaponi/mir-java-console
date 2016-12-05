@@ -9,8 +9,6 @@ import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import it.miriade.runtime.DefaultSpec;
 
@@ -21,8 +19,6 @@ import it.miriade.runtime.DefaultSpec;
  * @email s.vaponi@miriade.it
  */
 public class Main {
-
-	public static final Logger log = LoggerFactory.getLogger(Main.class);
 
 	// Argomento pre stampare le info di help
 	public static final String HELP_ARG = "h";
@@ -83,7 +79,7 @@ public class Main {
 			 */
 			CommandLine line = parser.parse(options, args);
 
-			log.info(String.format("%-14s %s ", "Version", DefaultSpec.VERSION));
+			System.out.println(String.format("%-14s %s ", "Version", DefaultSpec.VERSION));
 
 			if (line.hasOption(HELP_ARG)) {
 				printUsage();
@@ -91,7 +87,7 @@ public class Main {
 			}
 
 			if (line.hasOption(DEBUG_ARG)) {
-				log.info(String.format("%-14s %s ", DEBUG_ARG_NAME, Boolean.TRUE.toString()));
+				System.out.println(String.format("%-14s %s ", DEBUG_ARG_NAME, Boolean.TRUE.toString()));
 				System.setProperty("debug", Boolean.TRUE.toString());
 			}
 
@@ -99,7 +95,7 @@ public class Main {
 			if (line.hasOption(SUPER_ARG)) {
 				String className = line.getOptionValue(SUPER_ARG);
 				clazz = ClassLoader.getSystemClassLoader().loadClass(className);
-				log.info(String.format("%-14s %s ", SUPER_ARG_NAME, clazz.getName()));
+				System.out.println(String.format("%-14s %s ", SUPER_ARG_NAME, clazz.getName()));
 			}
 
 			if (clazz == null)
