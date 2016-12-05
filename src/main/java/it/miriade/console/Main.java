@@ -79,8 +79,6 @@ public class Main {
 			 */
 			CommandLine line = parser.parse(options, args);
 
-			System.out.println(String.format("%-14s %s ", "Version", DefaultSpec.VERSION));
-
 			if (line.hasOption(HELP_ARG)) {
 				printUsage();
 				System.exit(0);
