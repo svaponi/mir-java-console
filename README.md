@@ -17,7 +17,7 @@ Use [jitpack.io](https://jitpack.io/) as package repository for Git.
 	<dependency>
 		<groupId>com.github.svaponi</groupId>
 		<artifactId>mir-java-console</artifactId>
-		<version>master-SNAPSHOT</version>
+		<version>{version}-SNAPSHOT</version>
 	</dependency>
 	...
 </dependencies>
@@ -33,8 +33,7 @@ cd mir-java-console
 
 mvn clean compile assembly:single
 
-user@machine:/path/to/mir-java-console$ java -jar target/mir-java-console-1.1.0-jar-with-dependencies.jar
-13:35:14.006 INFO  it.miriade.console.Main - Version        1.1.0
+user@machine:/path/to/mir-java-console$ java -jar target/mir-java-console-{version}-jar-with-dependencies.jar
 CONSOLE > for(int i=0; i<10; i++)
 CONSOLE > syso Math.random() * i
 CONSOLE > return

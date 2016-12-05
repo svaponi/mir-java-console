@@ -7,8 +7,6 @@ package it.miriade.runtime;
  */
 public class DefaultSpec {
 
-	public static final String VERSION = "1.1.0";
-
 	public static final String DEBUG_MODE_SYSPROP = "debug";
 	public static boolean DEBUG_MODE = Boolean.parseBoolean(System.getProperty(DefaultSpec.DEBUG_MODE_SYSPROP, "false"));
 

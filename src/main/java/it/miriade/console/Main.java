@@ -10,8 +10,6 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 
-import it.miriade.runtime.DefaultSpec;
-
 /**
  * Classe principale per l'invocazione del {@link JavaConsole}.
  * 
@@ -78,8 +76,6 @@ public class Main {
 			 * Leggo gli argomenti in input
 			 */
 			CommandLine line = parser.parse(options, args);
-
-			System.out.println(String.format("%-14s %s ", "Version", DefaultSpec.VERSION));
 
 			if (line.hasOption(HELP_ARG)) {
 				printUsage();
