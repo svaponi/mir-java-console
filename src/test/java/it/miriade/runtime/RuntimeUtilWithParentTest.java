@@ -8,24 +8,22 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
-import it.miriade.runtime.core.runnables.MyAbstractRunnableWithResult;
-import it.miriade.runtime.core.runnables.MyRunnableInterfaceWithResult;
-import it.miriade.runtime.core.runnables.RunnableWithResult;
+import it.miriade.runtime.core.runnables.MyAbstractProducer;
+import it.miriade.runtime.core.runnables.MyProducer;
+import it.miriade.runtime.core.runnables.Producer;
 
 /**
  * @author svaponi
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class JavaResultBuilderWithSuperClassTest {
-
-	JavaResultBuilder builderWithInterfaceAsParent = new JavaResultBuilder(MyRunnableInterfaceWithResult.class);
+public class RuntimeUtilWithParentTest extends BaseTest {
 
 	@Test
 	public void t01_return_this() {
-		Object obj = builderWithInterfaceAsParent.runAndGetResult("return this;");
+		Object obj = RuntimeUtil.compile(MyProducer.class, "return this;").run();
 		Assert.assertNotNull(obj);
-		Assert.assertTrue(RunnableWithResult.class.isAssignableFrom(obj.getClass()));
-		Assert.assertTrue(MyRunnableInterfaceWithResult.class.isAssignableFrom(obj.getClass()));
+		Assert.assertTrue(Producer.class.isAssignableFrom(obj.getClass()));
+		Assert.assertTrue(MyProducer.class.isAssignableFrom(obj.getClass()));
 		Assert.assertEquals(DefaultSpec.RUNTIME_CLASSNAME, obj.getClass().getSimpleName());
 		/*
 		 * ATTENZIONE: il package è valido solo se DefaultSpec.RUNTIME_PACKAGE
@@ -36,7 +34,7 @@ public class JavaResultBuilderWithSuperClassTest {
 
 	@Test
 	public void t02_return_hello_string() {
-		Object obj = builderWithInterfaceAsParent.runAndGetResult("return \"hello\";");
+		Object obj = RuntimeUtil.compile(MyProducer.class, "return \"hello\";").run();
 		Assert.assertNotNull(obj);
 		Assert.assertEquals(String.class, obj.getClass());
 		Assert.assertEquals("hello", obj.toString());
@@ -44,7 +42,7 @@ public class JavaResultBuilderWithSuperClassTest {
 
 	@Test
 	public void t03_return_inherited_static_fields() {
-		Object obj = builderWithInterfaceAsParent.runAndGetResult("return first;");
+		Object obj = RuntimeUtil.compile(MyProducer.class, "return first;").run();
 		Assert.assertNotNull(obj);
 		Assert.assertEquals(String.class, obj.getClass());
 		Assert.assertEquals("first", obj.toString());
@@ -52,7 +50,7 @@ public class JavaResultBuilderWithSuperClassTest {
 
 	@Test
 	public void t04_return_inherited_fields() {
-		Object obj = builderWithInterfaceAsParent.runAndGetResult("return constant;");
+		Object obj = RuntimeUtil.compile(MyProducer.class, "return constant;").run();
 		Assert.assertNotNull(obj);
 		Assert.assertTrue(List.class.isAssignableFrom(obj.getClass()));
 		Assert.assertEquals(Arrays.asList("").getClass(), obj.getClass()); // classe
@@ -61,14 +59,12 @@ public class JavaResultBuilderWithSuperClassTest {
 		Assert.assertEquals(Arrays.asList("first", "second", "third"), obj);
 	}
 
-	JavaResultBuilder builderWithAbstractAsParent = new JavaResultBuilder(MyAbstractRunnableWithResult.class);
-
 	@Test
 	public void t11_return_this() {
-		Object obj = builderWithAbstractAsParent.runAndGetResult("return this;");
+		Object obj = RuntimeUtil.compile(MyAbstractProducer.class, "return this;").run();
 		Assert.assertNotNull(obj);
-		Assert.assertTrue(RunnableWithResult.class.isAssignableFrom(obj.getClass()));
-		Assert.assertTrue(MyAbstractRunnableWithResult.class.isAssignableFrom(obj.getClass()));
+		Assert.assertTrue(Producer.class.isAssignableFrom(obj.getClass()));
+		Assert.assertTrue(MyAbstractProducer.class.isAssignableFrom(obj.getClass()));
 		Assert.assertEquals(DefaultSpec.RUNTIME_CLASSNAME, obj.getClass().getSimpleName());
 		/*
 		 * ATTENZIONE: il package è valido solo se DefaultSpec.RUNTIME_PACKAGE
@@ -79,7 +75,7 @@ public class JavaResultBuilderWithSuperClassTest {
 
 	@Test
 	public void t12_return_hello_string() {
-		Object obj = builderWithAbstractAsParent.runAndGetResult("return \"hello\";");
+		Object obj = RuntimeUtil.compile(MyAbstractProducer.class, "return \"hello\";").run();
 		Assert.assertNotNull(obj);
 		Assert.assertEquals(String.class, obj.getClass());
 		Assert.assertEquals("hello", obj.toString());
@@ -87,15 +83,15 @@ public class JavaResultBuilderWithSuperClassTest {
 
 	@Test
 	public void t13_return_inherited_static_fields() {
-		Object obj = builderWithAbstractAsParent.runAndGetResult("return first;");
+		Object obj = RuntimeUtil.compile(MyAbstractProducer.class, "return ordinal(1);").run();
 		Assert.assertNotNull(obj);
 		Assert.assertEquals(String.class, obj.getClass());
-		Assert.assertEquals("first", obj.toString());
+		Assert.assertEquals("1st", obj.toString());
 	}
 
 	@Test
 	public void t14_return_inherited_fields() {
-		Object obj = builderWithAbstractAsParent.runAndGetResult("return customMethod();");
+		Object obj = RuntimeUtil.compile(MyAbstractProducer.class, "return inheritedMethod();").run();
 		Assert.assertNotNull(obj);
 		Assert.assertTrue(List.class.isAssignableFrom(obj.getClass()));
 		Assert.assertEquals(Arrays.asList("").getClass(), obj.getClass()); // classe
@@ -103,4 +99,5 @@ public class JavaResultBuilderWithSuperClassTest {
 																			 // java.util.Arrays$ArrayList
 		Assert.assertEquals(Arrays.asList("first", "second", "third"), obj);
 	}
+
 }

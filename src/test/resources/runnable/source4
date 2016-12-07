@@ -1,0 +1,12 @@
+String pathname = "target/runtime.txt";
+try (PrintWriter writer = new PrintWriter(pathname, "UTF-8")) {
+	// usa il metodo ereditato inheritedMethod()
+	for(String nth : inheritedMethod())
+		writer.append("The ").append(nth).append(" line\n");
+	// usa il metodo ereditato ordinal()
+	for (int i = 4; i < Math.pow(10, 6); i++)
+			writer.println("The " + ordinal(i) + " line");
+} catch (Exception e) {
+	e.printStackTrace();
+}
+

@@ -1,8 +1,8 @@
 String pathname = "target/runtime.txt";
 try (PrintWriter writer = new PrintWriter(pathname, "UTF-8")) {
-	// usa la variabile constant
-	for(String nth : constant)
-		writer.println("The ").append(nth).append(" line");
+	// usa il metodo ereditato
+	for(String nth : inheritedMethod())
+		writer.append("The ").append(nth).append(" line\n");
 } catch (Exception e) {
 	e.printStackTrace();
 }

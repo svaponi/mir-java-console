@@ -3,9 +3,9 @@ package it.miriade.runtime.core.runnables;
 import java.util.Arrays;
 import java.util.List;
 
-import it.miriade.runtime.core.runnables.RunnableWithResult;
+import it.miriade.runtime.core.runnables.Producer;
 
-public interface MyRunnableInterfaceWithResult extends RunnableWithResult {
+public interface MyProducer extends Producer {
 
 	String first = "first";
 	String second = "second";

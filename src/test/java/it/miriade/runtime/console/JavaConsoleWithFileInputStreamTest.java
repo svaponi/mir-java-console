@@ -1,4 +1,4 @@
-package it.miriade.console;
+package it.miriade.runtime.console;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,43 +9,29 @@ import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.AfterClass;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
-import it.miriade.console.JavaConsole;
+import it.miriade.runtime.BaseTest;
+import it.miriade.runtime.console.JavaConsole;
 
 /**
- * 
  * @author svaponi
- *
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class JavaConsoleWithFileInputStreamTest {
+public class JavaConsoleWithFileInputStreamTest extends BaseTest {
 
 	JavaConsole console = new JavaConsole();
-	
+
 	// file scritto dai test
 	static final String pathname = "target/runtime.txt";
-	
-	@BeforeClass
-	public static void setup() {
-		System.setProperty("add.colon", Boolean.FALSE.toString());
-		System.setProperty("show.code", Boolean.TRUE.toString());
-	}
-
-	@AfterClass
-	public static void tearDown() {
-		System.setProperty("add.colon", Boolean.TRUE.toString());
-	}
 
 	@Test
 	public void write_on_file_from_is() throws IOException {
 
-		File sourceFile = new File(ClassLoader.getSystemResource("void/source1").getPath());
+		File sourceFile = new File(ClassLoader.getSystemResource("runnable/source1").getPath());
 		InputStream is = new FileInputStream(sourceFile);
 		console.changeInput(is);
 		console.start(Arrays.asList(File.class, PrintWriter.class));
@@ -53,18 +39,17 @@ public class JavaConsoleWithFileInputStreamTest {
 		File file = (File) new File(pathname);
 		Assert.assertTrue(file.exists());
 		List<String> lines = Files.readAllLines(file.toPath());
-		
+
 		Assert.assertEquals("The first line", lines.get(0));
 		Assert.assertEquals("The second line", lines.get(1));
 		Assert.assertEquals("The third line", lines.get(2));
 		file.delete();
 	}
-	
 
-//	@Test
+	@Test
 	public void write_on_file_2_from_is() throws IOException {
 
-		File sourceFile = new File(ClassLoader.getSystemResource("void/source2").getPath());
+		File sourceFile = new File(ClassLoader.getSystemResource("runnable/source2").getPath());
 		InputStream is = new FileInputStream(sourceFile);
 		console.changeInput(is);
 		console.start(Arrays.asList(File.class, PrintWriter.class));

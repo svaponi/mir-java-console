@@ -13,36 +13,30 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
-import it.miriade.runtime.DefaultSpec;
-import it.miriade.runtime.JavaResultBuilder;
-import it.miriade.runtime.core.runnables.RunnableWithResult;
+import it.miriade.runtime.core.runnables.Producer;
 
 /**
- * 
  * @author svaponi
- *
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class JavaResultBuilderTest {
-
-	JavaResultBuilder console = new JavaResultBuilder();
+public class RuntimeUtilTest extends BaseTest {
 
 	@Test
 	public void t_00_return_this() {
-		Object obj = console.runAndGetResult("return this;");
+		Object obj = RuntimeUtil.compile("return this;").run();
 		Assert.assertNotNull(obj);
-		Assert.assertTrue(RunnableWithResult.class.isAssignableFrom(obj.getClass()));
+		Assert.assertTrue(Producer.class.isAssignableFrom(obj.getClass()));
 		Assert.assertEquals(DefaultSpec.RUNTIME_CLASSNAME, obj.getClass().getSimpleName());
 		/*
 		 * ATTENZIONE: il package è valido solo se DefaultSpec.RUNTIME_PACKAGE
 		 * esiste già nei sorgenti, altrimenti torna null
 		 */
 		Assert.assertEquals(DefaultSpec.RUNTIME_PACKAGE, obj.getClass().getPackage().getName());
-	}		
-	
+	}
+
 	@Test
 	public void t_10_return_hello_string() {
-		Object obj = console.runAndGetResult("return \"hello\";");
+		Object obj = RuntimeUtil.compile("return \"hello\";").run();
 		Assert.assertNotNull(obj);
 		Assert.assertEquals(String.class, obj.getClass());
 		Assert.assertEquals("hello", obj.toString());
@@ -50,7 +44,7 @@ public class JavaResultBuilderTest {
 
 	@Test
 	public void t_11_return_Math_random() {
-		Object obj = console.runAndGetResult("return Math.random();");
+		Object obj = RuntimeUtil.compile("return Math.random();").run();
 		Assert.assertNotNull(obj);
 		Assert.assertEquals(Double.class, obj.getClass());
 		Assert.assertTrue(((Double) obj) >= 0);
@@ -67,7 +61,7 @@ public class JavaResultBuilderTest {
 		sourceCodeBuf.append("}");
 		sourceCodeBuf.append("return list;");
 
-		Object obj = console.runAndReturn(sourceCodeBuf.toString(), Arrays.asList(List.class, ArrayList.class));
+		Object obj = RuntimeUtil.compile(sourceCodeBuf.toString(), Arrays.asList(List.class, ArrayList.class)).run();
 		Assert.assertNotNull(obj);
 		Assert.assertTrue(List.class.isAssignableFrom(obj.getClass()));
 		Assert.assertEquals(ArrayList.class, obj.getClass());
@@ -80,9 +74,9 @@ public class JavaResultBuilderTest {
 	@Test
 	public void t_20_write_on_file() throws IOException {
 
-		File sourceFile = new File(ClassLoader.getSystemResource("return/source1").getPath());
+		File sourceFile = new File(ClassLoader.getSystemResource("producer/source1").getPath());
 		String sourceCode = new String(Files.readAllBytes(sourceFile.toPath()));
-		Object obj = console.runAndReturn(sourceCode, Arrays.asList(File.class, PrintWriter.class));
+		Object obj = RuntimeUtil.compile(sourceCode, Arrays.asList(File.class, PrintWriter.class)).run();
 		Assert.assertNotNull(obj);
 		Assert.assertEquals(File.class, obj.getClass());
 		File file = (File) obj;
@@ -98,9 +92,9 @@ public class JavaResultBuilderTest {
 	@Test
 	public void t_21_write_on_file() throws IOException {
 
-		File sourceFile = new File(ClassLoader.getSystemResource("return/source2").getPath());
+		File sourceFile = new File(ClassLoader.getSystemResource("producer/source2").getPath());
 		String sourceCode = new String(Files.readAllBytes(sourceFile.toPath()));
-		Object obj = console.runAndReturn(sourceCode, Arrays.asList(File.class, PrintWriter.class));
+		Object obj = RuntimeUtil.compile(sourceCode, File.class, PrintWriter.class).run();
 		Assert.assertNotNull(obj);
 		Assert.assertEquals(File.class, obj.getClass());
 		File file = (File) obj;

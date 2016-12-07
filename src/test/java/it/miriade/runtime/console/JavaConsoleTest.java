@@ -1,4 +1,4 @@
-package it.miriade.console;
+package it.miriade.runtime.console;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,18 +12,16 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
-import it.miriade.runtime.JavaResultBuilder;
-import it.miriade.runtime.core.runnables.MyRunnableInterface;
+import it.miriade.runtime.BaseTest;
+import it.miriade.runtime.console.JavaConsole;
 
 /**
- * 
  * @author svaponi
- *
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class JavaConsoleWithSuperClassTest {
+public class JavaConsoleTest extends BaseTest {
 
-	JavaResultBuilder consoleWithInterfaceAsParent = new JavaResultBuilder(MyRunnableInterface.class);
+	JavaConsole console = new JavaConsole();
 
 	// file scritto dai test
 	static final String pathname = "target/runtime.txt";
@@ -31,30 +29,32 @@ public class JavaConsoleWithSuperClassTest {
 	@Test
 	public void write_on_file() throws IOException {
 
-		File sourceFile = new File(ClassLoader.getSystemResource("void/source1").getPath());
+		File sourceFile = new File(ClassLoader.getSystemResource("runnable/source1").getPath());
 		String sourceCode = new String(Files.readAllBytes(sourceFile.toPath()));
-		consoleWithInterfaceAsParent.run(sourceCode, Arrays.asList(File.class, PrintWriter.class));
+		console.run(sourceCode, Arrays.asList(File.class, PrintWriter.class));
 
 		File file = (File) new File(pathname);
 		Assert.assertTrue(file.exists());
 		List<String> lines = Files.readAllLines(file.toPath());
-		for (String nth : MyRunnableInterface.constant)
-			Assert.assertEquals("The " + nth + " line", lines.get(MyRunnableInterface.constant.indexOf(nth)));
+		Assert.assertEquals("The first line", lines.get(0));
+		Assert.assertEquals("The second line", lines.get(1));
+		Assert.assertEquals("The third line", lines.get(2));
 		file.delete();
 	}
 
 	@Test
 	public void write_on_file_2() throws IOException {
 
-		File sourceFile = new File(ClassLoader.getSystemResource("void/source2").getPath());
+		File sourceFile = new File(ClassLoader.getSystemResource("runnable/source2").getPath());
 		String sourceCode = new String(Files.readAllBytes(sourceFile.toPath()));
-		consoleWithInterfaceAsParent.run(sourceCode, Arrays.asList(File.class, PrintWriter.class));
+		console.run(sourceCode, Arrays.asList(File.class, PrintWriter.class));
 
 		File file = (File) new File(pathname);
 		Assert.assertTrue(file.exists());
 		List<String> lines = Files.readAllLines(file.toPath());
-		for (String nth : MyRunnableInterface.constant)
-			Assert.assertEquals("The " + nth + " line", lines.get(MyRunnableInterface.constant.indexOf(nth)));
+		Assert.assertEquals("The first line", lines.get(0));
+		Assert.assertEquals("The second line", lines.get(1));
+		Assert.assertEquals("The third line", lines.get(2));
 		for (int i = 4; i < Math.pow(10, 6); i++) {
 			if (i % 10 == 1)
 				Assert.assertEquals("The " + i + "st line", lines.get(i - 1));

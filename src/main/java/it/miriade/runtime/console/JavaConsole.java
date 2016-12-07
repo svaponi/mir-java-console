@@ -1,7 +1,8 @@
-package it.miriade.console;
+package it.miriade.runtime.console;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -31,10 +32,10 @@ public class JavaConsole {
 
 	// private final Logger log = LoggerFactory.getLogger(this.getClass());
 
-	protected InputStream is = System.in;
-	protected Scanner in;
-	protected RuntimeClassDefinition def;
-	protected List<String> lines;
+	private InputStream is = System.in;
+	private Scanner in;
+	private RuntimeClassDefinition def;
+	private List<String> lines;
 
 	public JavaConsole() {
 		this(Runnable.class);
@@ -53,37 +54,75 @@ public class JavaConsole {
 	/**
 	 * Esegue una porzione di codice
 	 * 
-	 * @param code
+	 * @param source
+	 *            codice sorgente
 	 */
-	public void run(String code) {
-		run(code, Collections.emptyList());
+	public void run(String source) {
+		run(source, Collections.emptyList());
 	}
 
 	/**
 	 * Esegue una porzione di codice utilizzando con la possibilità di usare le
 	 * classi importate.
 	 * 
-	 * @param code
+	 * @param source
+	 *            codice sorgente
 	 * @param imports
 	 */
-	public void run(String code, List<?> imports) {
+	public void run(String source, Object... imports) {
+		run(source, Arrays.asList(imports));
+	}
+
+	/**
+	 * Esegue una porzione di codice utilizzando con la possibilità di usare le
+	 * classi importate.
+	 * 
+	 * @param source
+	 *            codice sorgente
+	 * @param imports
+	 */
+	public void run(String source, List<?> imports) {
 		def.startDefinition(imports);
-		def.appendCode(code);
+		def.appendSourceCode(source);
 		def.closeDefinition();
 		((Runnable) RuntimeClassCompiler.build(def)).run();
 	}
 
-	public void run(List<String> linesOfCode, List<?> imports) {
+	/**
+	 * Esegue una porzione di codice utilizzando con la possibilità di usare le
+	 * classi importate.
+	 * 
+	 * @param linesOfSourceCode
+	 * @param imports
+	 */
+	public void run(List<String> linesOfSourceCode, List<?> imports) {
 		def.startDefinition(imports);
-		def.appendCode(linesOfCode);
+		def.appendSourceCode(linesOfSourceCode);
 		def.closeDefinition();
 		((Runnable) RuntimeClassCompiler.build(def)).run();
 	}
 
+	/**
+	 * Fa partire la console.
+	 */
 	public void start() {
 		start(Collections.emptyList());
 	}
 
+	/**
+	 * Fa partire la console rendendo disponibilie una serie di imports.
+	 * 
+	 * @param imports
+	 */
+	public void start(Object... imports) {
+		start(Arrays.asList(imports));
+	}
+
+	/**
+	 * Fa partire la console rendendo disponibilie una serie di imports.
+	 * 
+	 * @param imports
+	 */
 	public void start(List<?> imports) {
 		try {
 			in = new Scanner(is);

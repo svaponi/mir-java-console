@@ -1,6 +1,10 @@
 package it.miriade.runtime.core;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import it.miriade.runtime.DefaultSpec;
 import it.miriade.runtime.core.ex.ClassDefinitionException;
@@ -9,7 +13,6 @@ import it.miriade.runtime.core.ex.ClassDefinitionException;
  * Oggetto che incapsula il codice che verrà eseguito a runtime.
  * 
  * @author svaponi
- *
  */
 public class RuntimeClassDefinition {
 
@@ -19,25 +22,31 @@ public class RuntimeClassDefinition {
 	private String methodName;
 	private Class<?> returnType;
 	private Class<?> parent;
+	private List<?> imports;
 	private boolean initialized = false;
 	private boolean needsReturnStatement = false;
 	private boolean ident = true; // identa il codice per facilitare il debug
 
 	public RuntimeClassDefinition() {
-		this(DefaultSpec.RUNTIME_CLASSNAME, DefaultSpec.RUNTIME_PACKAGE, DefaultSpec.SUPER_CLASS);
+		this(DefaultSpec.RUNTIME_CLASSNAME, DefaultSpec.RUNTIME_PACKAGE, DefaultSpec.SUPER_CLASS, Collections.emptyList());
 	}
 
 	public RuntimeClassDefinition(Class<?> parent) {
-		this(DefaultSpec.RUNTIME_CLASSNAME, DefaultSpec.RUNTIME_PACKAGE, parent);
+		this(DefaultSpec.RUNTIME_CLASSNAME, DefaultSpec.RUNTIME_PACKAGE, parent, Collections.emptyList());
 	}
 
-	public RuntimeClassDefinition(String className, String packageName, Class<?> parent) {
+	public RuntimeClassDefinition(Class<?> parent, List<?> imports) {
+		this(DefaultSpec.RUNTIME_CLASSNAME, DefaultSpec.RUNTIME_PACKAGE, parent, imports);
+	}
+
+	public RuntimeClassDefinition(String className, String packageName, Class<?> parent, List<?> imports) {
 		super();
 		this.className = className;
 		this.packageName = packageName;
 		this.methodName = DefaultSpec.RUNTIME_METHOD;
 		this.returnType = DefaultSpec.RUNTIME_METHOD_RETURN_TYPE;
 		this.parent = parent;
+		this.imports = (imports == null) ? new ArrayList<>() : imports;
 		this.sourceCode = new StringBuffer();
 		try {
 			returnType = parent.getMethod(methodName).getReturnType();
@@ -123,26 +132,36 @@ public class RuntimeClassDefinition {
 	/**
 	 * Comincia la definizione della classe che conterrà il codice eseguito a
 	 * runtime.
-	 * 
-	 * @param imports
 	 */
-	public void startDefinition(List<?> imports) {
+	public void startDefinition() {
+		startDefinition(Collections.emptyList());
+	}
+
+	/**
+	 * Comincia la definizione della classe che conterrà il codice eseguito a
+	 * runtime. Aggiunge nuovi imports.
+	 * 
+	 * @param additionalImports
+	 *            nuovi imports
+	 */
+	public void startDefinition(List<?> additionalImports) {
 		sourceCode.delete(0, sourceCode.length());
 		sourceCode.append("package ").append(packageName).append(";").append(nl());
-		for (Object dependency : imports)
-			if (dependency instanceof Class<?>)
-				sourceCode.append("import ").append(((Class<?>) dependency).getCanonicalName()).append(";")
-						.append(nl());
-			else if (dependency instanceof Package)
-				sourceCode.append("import ").append(((Package) dependency).getName()).append(".*").append(";")
-						.append(nl());
-			else
-				sourceCode.append("import ").append(dependency.toString()).append(";").append(nl());
+		Stream.concat(imports.stream(), additionalImports == null ? Stream.empty() : additionalImports.stream()).forEach(new Consumer<Object>() {
+
+			@Override
+			public void accept(Object dependency) {
+				if (dependency instanceof Class<?>)
+					sourceCode.append("import ").append(((Class<?>) dependency).getCanonicalName()).append(";").append(nl());
+				else if (dependency instanceof Package)
+					sourceCode.append("import ").append(((Package) dependency).getName()).append(".*").append(";").append(nl());
+				else
+					sourceCode.append("import ").append(dependency.toString()).append(";").append(nl());
+			}
+		});
 		String extendsOrImplements = parent.isInterface() ? " implements " : " extends ";
-		sourceCode.append("public class ").append(className).append(extendsOrImplements)
-				.append(parent.getCanonicalName()).append(" {").append("\n");
-		sourceCode.append(tab()).append("public ").append(returnType.getSimpleName()).append(" ").append(methodName)
-				.append("() {").append("\n");
+		sourceCode.append("public class ").append(className).append(extendsOrImplements).append(parent.getCanonicalName()).append(" {").append("\n");
+		sourceCode.append(tab()).append("public ").append(returnType.getSimpleName()).append(" ").append(methodName).append("() {").append("\n");
 		initialized = true;
 	}
 
@@ -151,8 +170,8 @@ public class RuntimeClassDefinition {
 	 * 
 	 * @param lines
 	 */
-	public void appendCode(List<String> linesOfCode) throws ClassDefinitionException {
-		appendCode(linesOfCode.toArray(new String[] {}));
+	public void appendSourceCode(List<String> linesOfCode) throws ClassDefinitionException {
+		appendSourceCode(linesOfCode.toArray(new String[] {}));
 	}
 
 	/**
@@ -160,9 +179,9 @@ public class RuntimeClassDefinition {
 	 * 
 	 * @param lines
 	 */
-	public void appendCode(String[] lines) throws ClassDefinitionException {
+	public void appendSourceCode(String[] lines) throws ClassDefinitionException {
 		for (String line : lines)
-			appendCode(line);
+			appendSourceCode(line);
 	}
 
 	/**
@@ -170,7 +189,7 @@ public class RuntimeClassDefinition {
 	 * 
 	 * @param line
 	 */
-	public void appendCode(String line) throws ClassDefinitionException {
+	public void appendSourceCode(String line) throws ClassDefinitionException {
 		verifyInitialized();
 		sourceCode.append(tab()).append(tab()).append(line).append(nl());
 	}

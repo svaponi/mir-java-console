@@ -1,4 +1,4 @@
-package it.miriade.console;
+package it.miriade.runtime.console;
 
 import java.util.ArrayList;
 import java.util.List;

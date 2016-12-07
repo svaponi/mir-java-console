@@ -1,5 +1,11 @@
 # mir-java-console
 
+### 1.3.0
+Definito `RuntimeUtil` per utilizzare facilmente le funzionalità di `RuntimeClassCompiler` e `RuntimeObjectFactory`.
+Cambiata la struttura dei package, spostato tutto sotto `it.miriade.runtime`.
+Importato il codice sorgente di [InMemoryJavaCompiler](https://github.com/trung/InMemoryJavaCompiler).
+
+
 ### 1.2.0
 In `JavaConsole` aggiunti:
 * comandi speciali con prefisso `:` (semi-colon), es. `:exit` per uscire dalla console.

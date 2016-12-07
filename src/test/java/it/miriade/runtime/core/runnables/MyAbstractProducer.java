@@ -2,7 +2,7 @@ package it.miriade.runtime.core.runnables;
 
 import java.util.List;
 
-public abstract class MyAbstractRunnable implements MyRunnable {
+public abstract class MyAbstractProducer implements MyProducer {
 
 	protected List<String> inheritedMethod() {
 		return constant;
