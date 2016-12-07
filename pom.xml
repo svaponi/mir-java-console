@@ -29,15 +29,11 @@
 					<target>${java.version}</target>
 					<compilerArgs>
 						<!-- javac arguments, see https://docs.oracle.com/javase/8/docs/technotes/tools/windows/javac.html -->
-						<arg>-Xlint:all</arg>
-						<!-- Enables all recommended warnings. In this release, enabling all 
-							available warnings is recommended. -->
-						<arg>-Xlint:-processing</arg>
-						<!-- Disables warning name -->
-						<arg>-Xlint:-serial</arg>
-						<!-- Disables warning name -->
-						<arg>-Werror</arg>
-						<!-- Terminates compilation when warnings occur -->
+						<!-- -Xlint:all = Enables all recommended warnings. In this release, 
+							enabling all available warnings is recommended. -->
+						<!-- -Xlint:-processing = disables warning "processing" -->
+						<!-- -Xlint:-serial = disables warning "serial" -->
+						<!-- -Werror = Terminates compilation when warnings occur -->
 					</compilerArgs>
 				</configuration>
 			</plugin>
@@ -70,6 +66,39 @@
 					<tagNameFormat>v@{project.version}</tagNameFormat>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>${maven-source-plugin.version}</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>${maven-javadoc-plugin.version}</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<additionalparam>-Xdoclint:none</additionalparam>
+					<!-- <reportOutputDirectory>javadoc</reportOutputDirectory> -->
+					<!-- <destDir>${project.artifactId}</destDir> -->
+					<!-- <excludePackageNames>*.internal:org.acme.exclude1.*:org.acme.exclude2</excludePackageNames> -->
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -89,6 +118,8 @@
 		<maven-jar-plugin.version>2.6</maven-jar-plugin.version>
 		<maven-assembly-plugin.version>2.6</maven-assembly-plugin.version>
 		<maven-release-plugin.version>2.5.1</maven-release-plugin.version>
+		<maven-source-plugin.version>3.0.0</maven-source-plugin.version>
+		<maven-javadoc-plugin.version>2.10.3</maven-javadoc-plugin.version>
 
 		<!-- Other -->
 		<commons-cli.version>1.2</commons-cli.version>
