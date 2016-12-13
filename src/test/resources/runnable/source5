@@ -1,0 +1,8 @@
+List<Package> list = Arrays.asList(Package.getPackages());
+Collections.sort(list, new Comparator<Package>() {
+	@Override
+	public int compare(Package o1, Package o2) {
+		return o1.getName().compareTo(o2.getName());
+	}
+});
+list.forEach(x -> System.out.println(x));

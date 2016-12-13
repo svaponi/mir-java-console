@@ -1,5 +1,8 @@
 # mir-java-console
 
+### 1.3.1
+Fix missingEndColon regexp in JavaConsole
+
 ### 1.3.0
 Definito `RuntimeUtil` per utilizzare facilmente le funzionalità di `RuntimeClassCompiler` e `RuntimeObjectFactory`.
 Cambiata la struttura dei package, spostato tutto sotto `it.miriade.runtime`.

@@ -24,7 +24,7 @@ public class JavaConsole {
 
 	public static final Pattern returnStatement = Pattern.compile("^return(\\ \\w*)?[;]?$");
 	public static final Pattern returnEmptyStatement = Pattern.compile("^return(\\ )*[;]?$");
-	public static final Pattern missingEndColon = Pattern.compile("^(?!for|if|while|else).*[^;]$");
+	public static final Pattern missingEndColon = Pattern.compile("^(?!for|if|while|else|@).*[^;\\{\\}]$");
 	public static final Pattern sysoShortcut = Pattern.compile("^syso\\ ([^;!]*)[;]?[!]?$");
 	public static final Pattern specialCommand = Pattern.compile("^:([\\w]*)$");
 	public static final Pattern setCommand = Pattern.compile("^:([\\w]*)([\\ ]([\\w]*)[=]([\\w]*))?$");
@@ -140,8 +140,8 @@ public class JavaConsole {
 
 					try {
 						run(lines, imports);
-					} catch (Exception e) {
-						e.printStackTrace();
+					} catch (Throwable t) {
+						t.printStackTrace();
 					} finally {
 						compile = false;
 						lines.clear(); // svuoto il buffer
@@ -191,7 +191,7 @@ public class JavaConsole {
 
 				try {
 					line = readLine();
-					if (runSingleLine.matcher(line).find()) {
+					if (runSingleLine.matcher(line).matches()) {
 						/*
 						 * esegue subito la riga di codice che termina con !
 						 */
@@ -199,7 +199,7 @@ public class JavaConsole {
 						compile = true;
 						continue loop;
 					}
-					compile = returnStatement.matcher(line).find();
+					compile = returnStatement.matcher(line).matches();
 
 				} catch (NoSuchElementException e) {
 					eof = true;

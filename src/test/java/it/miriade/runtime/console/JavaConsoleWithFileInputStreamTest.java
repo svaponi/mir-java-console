@@ -15,7 +15,6 @@ import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
 import it.miriade.runtime.BaseTest;
-import it.miriade.runtime.console.JavaConsole;
 
 /**
  * @author svaponi

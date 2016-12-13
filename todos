@@ -1,0 +1,18 @@
+
+- non mettere la virgola sulle annotatioon, riga inizia con @
+- non mettere la virgola se la riga termina con graffa aperta (da verificare)
+
+esempio errori
+
+public class R implements java.lang.Runnable {
+	public void run() {
+		java.util.List<Package> list = java.util.Arrays.asList(Package.getPackages());
+		java.util.Collections.sort(list, new java.util.Comparator<Package>() {; <==ERRORE
+		@Override; <==ERRORE
+		public int compare(Package o1, Package o2) {; <==ERRORE
+		return o1.getName().compareTo(o2.getName());
+		}; <==ERRORE
+		});
+		list.forEach(x -> System.out.println(x));
+	}
+}

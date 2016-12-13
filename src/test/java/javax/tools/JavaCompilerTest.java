@@ -10,6 +10,9 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.Set;
 
+import javax.tools.JavaCompiler;
+import javax.tools.ToolProvider;
+
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
