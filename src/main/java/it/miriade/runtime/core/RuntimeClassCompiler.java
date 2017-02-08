@@ -50,11 +50,15 @@ public class RuntimeClassCompiler {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public static <T> Class<T> compile(String qualifiedClassName, String sourceCode) throws Exception {
+		return compile(qualifiedClassName, sourceCode, DefaultSpec.RUNTIME_CLASSLOADER);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T> Class<T> compile(String qualifiedClassName, String sourceCode, ClassLoader parent) throws Exception {
 		JavaBytecode bytecode = new JavaBytecode(qualifiedClassName);
 		Iterable<? extends JavaFileObject> compilationUnits = Arrays.asList(new JavaSource(qualifiedClassName, sourceCode));
-		DynamicClassLoader cl = new DynamicClassLoader(ClassLoader.getSystemClassLoader());
+		DynamicClassLoader cl = new DynamicClassLoader(parent);
 		ExtendedStandardJavaFileManager fileManager = new ExtendedStandardJavaFileManager(javac.getStandardFileManager(null, null, null), bytecode, cl);
 		JavaCompiler.CompilationTask task = javac.getTask(null, fileManager, null, null, null, compilationUnits);
 		boolean result = task.call();

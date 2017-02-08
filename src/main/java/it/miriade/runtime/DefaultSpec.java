@@ -8,7 +8,7 @@ package it.miriade.runtime;
 public class DefaultSpec {
 
 	public static final String DEBUG_MODE_SYSPROP = "debug";
-	public static boolean DEBUG_MODE = Boolean.parseBoolean(System.getProperty(DefaultSpec.DEBUG_MODE_SYSPROP, "false"));
+	public static boolean DEBUG_MODE = Boolean.parseBoolean(System.getProperty(DEBUG_MODE_SYSPROP, "false"));
 
 	// aggiunge colon alla fine delle istruzioni
 	// public static final String ADD_COLON_SYSPROP = "add.colon";
@@ -21,10 +21,10 @@ public class DefaultSpec {
 	 * obj.getClass().getPackage() tornerà null (obj è l'oggetto che implementa
 	 * {@link DefaultSpec#SUPER_CLASS} generato a runtime)
 	 */
+	public static ClassLoader RUNTIME_CLASSLOADER = ClassLoader.getSystemClassLoader();
 	public static String RUNTIME_PACKAGE = DefaultSpec.class.getPackage().getName();
 	public static String RUNTIME_CLASSNAME = "RuntimeObject";
 	public static String RUNTIME_METHOD = "run";
 	public static Class<?> RUNTIME_METHOD_RETURN_TYPE = Void.class;
 	public static Class<?> SUPER_CLASS = Runnable.class;
-
 }
